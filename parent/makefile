@@ -10,7 +10,7 @@ components = $(addprefix ${project_root}/, \
 dependencies = $(addsuffix /makefile.d, $(components))
 
 
-target = build
+target = install
 .DEFAULT_GOAL := build
 
 .PHONY: clean

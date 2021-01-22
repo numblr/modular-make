@@ -1,6 +1,5 @@
 SHELL=/bin/bash
 
-
 project_root ?= $(realpath ..)
 project_name = $(notdir $(realpath .))
 project_version ?= 0.0.1
@@ -12,24 +11,8 @@ dependencies = $(addprefix $(project_root)/, \
 		module_three)
 
 
-.DEFAULT_GOAL := install
+include $(project_root)/makefile.base
 
-.PHONY: depend
-depend:
-	echo ${project_root}/$(project_name): $(dependencies) > makefile.d
-
-.PHONY: clean
-clean:
-	rm -rf $(dist)
-	rm -rf makefile.d
-
-.PHONY: install
-install: build
-	rm -rf $(project_name).%.dist
-	cp $(dist) $(project_repo)/
-
-.PHONY: build
-build: dist
 
 dist:
 	echo "Build 1"

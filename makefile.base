@@ -1,0 +1,21 @@
+SHELL=/bin/bash
+
+
+.DEFAULT_GOAL := install
+
+.PHONY: depend
+depend:
+	echo ${project_root}/$(project_name): $(dependencies) > makefile.d
+
+.PHONY: clean
+clean:
+	rm -rf $(dist)
+	rm -rf makefile.d
+
+.PHONY: install
+install: build
+	rm -rf $(project_name).%.dist
+	cp $(dist) $(project_repo)/
+
+.PHONY: build
+build: dist
