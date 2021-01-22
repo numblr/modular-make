@@ -1,30 +1,25 @@
-project_name=parent
-project_version=0.0.1-dev
+SHELL=/bin/bash
 
-project_root=..
-
+export project_root=$(realpath ..)
+project_name = $(notdir $(realpath .))
+project_version=0.0.1
 components = $(addprefix ${project_root}/, \
-		comp_one \
-		comp_two \
-		comp_three)
+		module_one \
+		module_two \
+		module_three)
 dependencies = $(addsuffix /makefile.d, $(components))
 
 
 target = build
-
-SHELL=/bin/bash
 .DEFAULT_GOAL := build
-
 
 .PHONY: clean
 clean:
 	$(MAKE) target=clean
 
-.PHONY: depend
-depend: $(dependencies)
-
-$(dependencies):
-	$(MAKE) --directory=$(dir $@) depend
+.PHONY: install
+install:
+	$(MAKE) target=install
 
 .PHONY: build
 build: $(components)
@@ -32,5 +27,11 @@ build: $(components)
 .PHONY: $(components)
 $(components):
 	$(MAKE) --directory=$@ $(target)
+
+.PHONY: depend
+depend: $(dependencies)
+
+$(dependencies):
+	$(MAKE) --directory=$(dir $@) depend
 
 include $(dependencies)
