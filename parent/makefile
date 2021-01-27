@@ -2,7 +2,7 @@ SHELL=/bin/bash
 
 export project_root=$(realpath ..)
 project_name = $(notdir $(realpath .))
-project_version=0.0.1
+project_version = $(shell cat version.txt)
 components = $(addprefix ${project_root}/, \
 		module_one \
 		module_two \
@@ -10,8 +10,10 @@ components = $(addprefix ${project_root}/, \
 dependencies = $(addsuffix /makefile.d, $(components))
 
 
-target = install
+target ?= dist
 .DEFAULT_GOAL := build
+
+$(info Run $(target) for $(project_name), version: $(project_version), in $(project_root))
 
 .PHONY: clean
 clean:

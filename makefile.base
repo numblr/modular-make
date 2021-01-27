@@ -1,21 +1,30 @@
 SHELL=/bin/bash
 
+$(info Project $(project_name), version: $(project_version), in $(project_root))
 
 .DEFAULT_GOAL := install
 
 .PHONY: depend
 depend:
+ifdef dependencies
 	echo ${project_root}/$(project_name): $(dependencies) > makefile.d
+else
+	touch makefile.d
+endif
 
 .PHONY: clean
 clean:
-	rm -rf $(dist)
-	rm -rf makefile.d
 
-.PHONY: install
-install: build
-	rm -rf $(project_name).%.dist
-	cp $(dist) $(project_repo)/
+.PHONY: touch-version
+touch-version:
+	touch version.txt
+
+version.txt: $(addsuffix /version.txt, $(dependencies))
+	cat version.txt | awk -F. -v OFS=. '{$$NF++;print}' > version.increment
+	mv version.increment version.txt
 
 .PHONY: build
-build: dist
+build: version.txt
+
+.PHONY: dist
+dist: build test

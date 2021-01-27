@@ -2,10 +2,10 @@ SHELL=/bin/bash
 
 project_root ?= $(realpath ..)
 project_name = $(notdir $(realpath .))
-project_version ?= 0.0.1
+project_version = $(shell cat version.txt)
 project_repo ?= $(project_root)/repo
 
-dist = $(project_name).$(project_version).dist
+artifact = $(project_name).$(project_version)
 
 dependencies = $(addprefix $(project_root)/, \
 		module_three)
@@ -13,8 +13,25 @@ dependencies = $(addprefix $(project_root)/, \
 
 include $(project_root)/makefile.base
 
+clean:
+	$(info Clean $(project_name))
+	@rm -rf $(artifact)
+	@rm -rf makefile.d
+
+build:
+	$(info Build $(project_name): $(project_version))
+	@cat source.txt | sed "s/%b/$(project_name)/g" | sed "s/%v/$(project_version)/g" > $(artifact)
+	@cat $(project_repo)/module_three.*.dist >> $(artifact)
+
+test:
+	$(info Test $(project_name))
+	@if ! grep -Fxq "Build $(project_name): $(project_version)" $(artifact); then \
+		echo "Passed test for $(project_name)"; \
+	else \
+		echo "Failed test for $(project_name)"; \
+	fi
 
 dist:
-	echo "Build 1"
-	echo "Build 1" > $(dist)
-	cat $(project_repo)/module_three.$(project_version).dist >> $(dist)
+	$(info Distribute $(project_name))
+	@rm -rf $(project_repo)/$(project_name).*.dist
+	@cp $(artifact) $(project_repo)/$(artifact).dist
