@@ -4,27 +4,38 @@ $(info Project $(project_name), version: $(project_version), in $(project_root))
 
 .DEFAULT_GOAL := install
 
+# Implicit rules
 .PHONY: depend
 depend:
-ifdef dependencies
-	echo ${project_root}/$(project_name): $(dependencies) > makefile.d
-else
-	touch makefile.d
-endif
 
 .PHONY: clean
 clean:
 
 .PHONY: touch-version
 touch-version:
-	touch version.txt
 
 version.txt: $(addsuffix /version.txt, $(dependencies))
+
+build: version.txt
+
+.PHONY: test
+test: build
+
+.PHONY: dist
+dist: test
+
+# Explicit rules
+version.txt:
+	echo "Update version of ${project_root}/$(project_name)"
 	cat version.txt | awk -F. -v OFS=. '{$$NF++;print}' > version.increment
 	mv version.increment version.txt
 
-.PHONY: build
-build: version.txt
+touch-version:
+	touch version.txt
 
-.PHONY: dist
-dist: build test
+depend:
+ifdef dependencies
+	echo ${project_root}/$(project_name): $(dependencies) > makefile.d
+else
+	touch makefile.d
+endif
